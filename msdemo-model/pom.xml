@@ -11,6 +11,11 @@
     <groupId>msdemo-model</groupId>
     <artifactId>msdemo-model</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <msdemo.skipGenLiquibaseXml>true</msdemo.skipGenLiquibaseXml>
+    </properties>
 
     <profiles>
         <profile>
@@ -21,12 +26,35 @@
         </profile>
     </profiles>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <!--<scope>provided</scope> -->
+        </dependency>
 
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.ckr.msdemo</groupId>
+            <artifactId>db-access</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

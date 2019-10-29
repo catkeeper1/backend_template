@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>msdemo-commonlibs</artifactId>
+        <groupId>org.ckr.msdemo</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ckr.msdemo</groupId>
+    <artifactId>utility</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <msdemo.skipReportGen>true</msdemo.skipReportGen>
+
+    </properties>
+    <!-- in this module, all dependencies should be in "provided" scope. The reason is we should not force all other
+    modules that use this utility module include all it's dependencies. For example, there are 10 classes in this
+    utility module. The 1st class need to be compiled with Hibernate API. There is another module A. The module A need
+    to use the 8th class so that it include utility module into its class path. Module A do not need to access
+    the 1st class and it do not need Hibernate as well. If the Hibernate is an dependency in "compile" scope for
+    utility module, Hibernate will be included in module A's classpath. If module A is an spring boot application,
+    the Hibernate will be included in the package for module A which will increase the package size significantly.
+    So, we always put "provided" here and let the other module to make decision about which dependency should be
+    included in their class paths and the package.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+
+</project>

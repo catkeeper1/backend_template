@@ -10,7 +10,7 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
 #    url: jdbc:h2:mem:dbtest
-    url: jdbc:h2:file:~/Documents/db-h2
+    url: jdbc:h2:file:~/Documents/db-h2/test_file
   h2:
     console:
       settings:

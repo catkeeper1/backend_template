@@ -33,9 +33,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <!-- remove to model -->
+            <groupId>msdemo-model</groupId>
+            <artifactId>msdemo-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

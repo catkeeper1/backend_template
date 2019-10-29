@@ -1,0 +1,27 @@
+server:
+  port: 9083
+  servlet:
+    context-path: /admin_service
+
+spring:
+  datasource:
+    type: org.apache.commons.dbcp2.BasicDataSource
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:dbtest
+    url: jdbc:h2:file:~/Documents/db-h2/test_file
+  h2:
+    console:
+      settings:
+        web-allow-others: true
+      path: /h2
+      enabled: true
+
+logging:
+  level:
+    org.springframework:
+      web: DEBUG
+      orm: DEBUG
+      security: DEBUG
+    org.ckr: DEBUG

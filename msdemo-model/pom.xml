@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>msdemo-parents</artifactId>
+        <groupId>org.ckr.msdemo</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>msdemo-model</groupId>
+    <artifactId>msdemo-model</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <msdemo.skipGenLiquibaseXml>true</msdemo.skipGenLiquibaseXml>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>gen-liquibase-xml</id>
+            <properties>
+                <msdemo.skipGenLiquibaseXml>false</msdemo.skipGenLiquibaseXml>
+            </properties>
+        </profile>
+    </profiles>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <!--<scope>provided</scope> -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ckr.msdemo</groupId>
+            <artifactId>db-access</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <propertyFile>./setting/liquibase.properties</propertyFile>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+
+                    <execution>
+                        <id>gen-liquebase-xml</id>
+                        <phase>generate-resources</phase>
+
+                        <configuration>
+                            <doclet>org.ckr.msdemo.doclet.LiquiBaseDoclet</doclet>
+
+                            <docletArtifacts>
+                                <artifact>
+                                    <artifactId>build-tool</artifactId>
+                                    <groupId>org.ckr.msdemo</groupId>
+                                    <version>${project.version}</version>
+                                </artifact>
+                            </docletArtifacts>
+                            <useStandardDocletOptions>false</useStandardDocletOptions>
+                            <skip>${msdemo.skipGenLiquibaseXml}</skip>
+                            <!--<show>protected</show>-->
+                            <docencoding>UTF-8</docencoding>
+                            <encoding>UTF-8</encoding>
+                            <charset>UTF-8</charset>
+                            <!--<includeDependencySources>true</includeDependencySources>-->
+                            <!--<dependencySourceIncludes>-->
+                            <!--<dependencySourceInclude>org.ckr.msdemo:exceptions</dependencySourceInclude>-->
+                            <!--</dependencySourceIncludes>-->
+                            <additionalJOptions>
+                                <additionalJOption>-J-Doutput=${project.build.directory}</additionalJOption>
+                            </additionalJOptions>
+                        </configuration>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+
+
+</project>

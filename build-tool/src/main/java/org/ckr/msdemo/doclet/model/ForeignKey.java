@@ -1,7 +1,7 @@
 package org.ckr.msdemo.doclet.model;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.ClassDoc;//NOSONAR
+import com.sun.javadoc.MethodDoc;//NOSONAR
 import org.ckr.msdemo.doclet.util.AnnotationScanTemplate;
 import org.ckr.msdemo.doclet.util.DocletUtil;
 
@@ -75,9 +75,7 @@ public class ForeignKey {
         return sourceColumnNames;
     }
 
-    private void setSourceColumnNames(List<String> sourceColumnNames) {
-        this.sourceColumnNames = sourceColumnNames;
-    }
+
 
     public List<String> getTargetColumnNames() {
         return targetColumnNames;
@@ -141,8 +139,6 @@ public class ForeignKey {
 
         List<ForeignKey> foreignKeyList = new ArrayList<>();
 
-        result.put(tableName, foreignKeyList);
-
         MethodDoc[] methods = classDoc.methods();
 
         if (methods == null) {
@@ -151,83 +147,88 @@ public class ForeignKey {
 
         for (MethodDoc method : methods) {
 
-            ForeignKey foreignKey = new ForeignKey();
+            ForeignKey foreignKey = createForeignKey(method, tableList, tableName);
 
-
-            new AnnotationScanTemplate<ForeignKey>(method, foreignKey)
-
-                    .annotation(MANY_TO_ONE_QUALIFIED_NAME,
-                            (dataObject, annotation) -> dataObject.setJoinType(JOIN_TYPE_MANY_TO_ONE))
-                        .attribute(RELATIONSHIP_OPTIONAL,
-                               (data, annotationValue) -> data.setOptional((Boolean)annotationValue.value()))
-                    .parent()
-                    .annotation(ONE_TO_ONE_QUALIFIED_NAME,
-                            (dataObject, annotation) -> dataObject.setJoinType(JOIN_TYPE_ONE_TO_ONE))
-                        .attribute(RELATIONSHIP_OPTIONAL,
-                                (data, annotationValue) -> data.setOptional((Boolean)annotationValue.value()))
-                    .parent()
-                    .annotation(JOIN_COLUMN_QUALIFIED_NAME)
-                        .attribute(JOIN_COLUMN_NAME,
-                                (data, annotationValue) ->
-                                        data.addColumnName((String) annotationValue.value()))
-                    .parent()
-                    .annotation(JOIN_TABLE_QUALIFIED_NAME)
-                        .attribute(JOIN_TABLE_NAME,
-                            (data, annotationValue) ->
-                                    data.addColumnName((String) annotationValue.value()))
-                    .parent()
-                    .scanProgramElement();
-
-
-            if (foreignKey.joinType == null) {
-                continue;
+            if(foreignKey != null) {
+                foreignKeyList.add(foreignKey);
             }
 
-            foreignKey.setSourceTableName(tableName);
-
-            String targetTableTypeName = method.returnType().qualifiedTypeName();
-            DocletUtil.logMsg("targetTableTypeName: " + targetTableTypeName);
-
-            Table targetTable = null;
-            for(Table table : tableList) {
-                if(targetTableTypeName.equals(table.getFullClassName())) {
-                    targetTable = table;
-                }
-            }
-
-            foreignKey.setTargetTableName(targetTable.getTableName());
-
-            //find the ID column for target table.
-            if(foreignKey.getTargetColumnNames().isEmpty()) {
-
-                List<String> targetColumnNames = new ArrayList<>();
-
-                for(Column targetColumn : targetTable.getColumnList()) {
-                    if(targetColumn.getIsPrimaryKey()) {
-                        targetColumnNames.add(targetColumn.getName());
-                    }
-
-                }
-
-                foreignKey.setTargetColumnNames(targetColumnNames);
-            }
-
-            DocletUtil.logMsg("create foreign Key: " + foreignKey);
-            foreignKeyList.add(foreignKey);
-
-
-            //result.add(foreignKey);
         }
 
-
-//        if (result.size() > 0 && classDoc.superclass() != null) {
-//
-//            List<Column> superClassResult = createColumns(classDoc.superclass());
-//
-//            result.addAll(superClassResult);
-//        }
+        result.put(tableName, foreignKeyList);
 
         return result;
+    }
+
+    private static ForeignKey createForeignKey(MethodDoc method, List<Table> tableList, String tableName) {
+        ForeignKey foreignKey = new ForeignKey();
+
+
+        new AnnotationScanTemplate<ForeignKey>(method, foreignKey)
+
+                .annotation(MANY_TO_ONE_QUALIFIED_NAME,
+                        (dataObject, annotation) -> dataObject.setJoinType(JOIN_TYPE_MANY_TO_ONE))
+                .attribute(RELATIONSHIP_OPTIONAL,
+                        (data, annotationValue) -> data.setOptional((Boolean)annotationValue.value()))
+                .parent()
+                .annotation(ONE_TO_ONE_QUALIFIED_NAME,
+                        (dataObject, annotation) -> dataObject.setJoinType(JOIN_TYPE_ONE_TO_ONE))
+                .attribute(RELATIONSHIP_OPTIONAL,
+                        (data, annotationValue) -> data.setOptional((Boolean)annotationValue.value()))
+                .parent()
+                .annotation(JOIN_COLUMN_QUALIFIED_NAME)
+                .attribute(JOIN_COLUMN_NAME,
+                        (data, annotationValue) ->
+                                data.addColumnName((String) annotationValue.value()))
+                .parent()
+                .annotation(JOIN_TABLE_QUALIFIED_NAME)
+                .attribute(JOIN_TABLE_NAME,
+                        (data, annotationValue) ->
+                                data.addColumnName((String) annotationValue.value()))
+                .parent()
+                .scanProgramElement();
+
+
+
+        String targetTableTypeName = method.returnType().qualifiedTypeName();
+        DocletUtil.logMsg("targetTableTypeName: " + targetTableTypeName);
+
+        Table targetTable = null;
+        for(Table table : tableList) {
+            if(targetTableTypeName.equals(table.getFullClassName())) {
+                targetTable = table;
+            }
+        }
+
+        if (foreignKey.joinType == null || targetTable == null) {
+            return null;
+        }
+
+        foreignKey.setSourceTableName(tableName);
+
+
+
+
+
+        foreignKey.setTargetTableName(targetTable.getTableName());
+
+        //find the ID column for target table.
+        if(foreignKey.getTargetColumnNames().isEmpty()) {
+
+            List<String> targetColumnNames = new ArrayList<>();
+
+            for(Column targetColumn : targetTable.getColumnList()) {
+                if(Boolean.TRUE.equals(targetColumn.getIsPrimaryKey())) {
+                    targetColumnNames.add(targetColumn.getName());
+                }
+
+            }
+
+            foreignKey.setTargetColumnNames(targetColumnNames);
+        }
+
+        DocletUtil.logMsg("create foreign Key: " + foreignKey);
+        return foreignKey;
     }
 
     @Override

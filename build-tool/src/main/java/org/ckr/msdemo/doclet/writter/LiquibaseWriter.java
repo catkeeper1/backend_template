@@ -1,5 +1,6 @@
 package org.ckr.msdemo.doclet.writter;
 
+import org.ckr.msdemo.doclet.exception.DocletException;
 import org.ckr.msdemo.doclet.model.Column;
 import org.ckr.msdemo.doclet.model.DataModel;
 import org.ckr.msdemo.doclet.model.Index;
@@ -18,6 +19,10 @@ import static org.ckr.msdemo.doclet.util.DocletUtil.*;
  */
 public class LiquibaseWriter {
 
+    private static final String COLUMN_TAG_START = "<column name=\"";
+
+    private static final String COLUMN_TAG_TYPE = "\" type=\"";
+
     private File baseDir;
 
     private DataModel dataModel;
@@ -31,15 +36,14 @@ public class LiquibaseWriter {
         File dir = new File(baseDirPath);
 
         if (!dir.isDirectory()) {
-            throw new RuntimeException(dir.getAbsolutePath() + " is not a valid dir.");
+            throw new DocletException(dir.getAbsolutePath() + " is not a valid dir.");
         }
 
         dir = new File(dir, "liquibaseXml");
 
-        if (!dir.exists()) {
-            if (!dir.mkdir()) {
-                throw new RuntimeException("cannot create directory:" + dir.getAbsolutePath());
-            }
+        if (!dir.exists() && !dir.mkdir()) {
+                throw new DocletException("cannot create directory:" + dir.getAbsolutePath());
+
         }
 
         this.baseDir = dir;
@@ -54,14 +58,19 @@ public class LiquibaseWriter {
 
         result = new File(result, fileName);
 
-        if (!result.exists()) {
-            try {
-                result.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("create not create new file " + result.getAbsolutePath(), ex);
+
+        try {
+            boolean created = result.createNewFile();
+
+            if(!created) {
+                DocletUtil.logMsg(fileName + " already exist");
             }
+
+        } catch (IOException ex) {
+
+            throw new DocletException("create not create new file " + result.getAbsolutePath(), ex);
         }
+
         return result;
     }
 
@@ -201,7 +210,7 @@ public class LiquibaseWriter {
 
             for (Index.IndexColumn indexColumn : index.getColumnList()) {
 
-                writter.write(indent(3) + "<column name=\"" + indexColumn.getName() + "\"/>" + ENTER);
+                writter.write(indent(3) + COLUMN_TAG_START + indexColumn.getName() + "\"/>" + ENTER);
 
             }
 
@@ -217,7 +226,7 @@ public class LiquibaseWriter {
         if (Boolean.TRUE.equals(column.getIsPrimaryKey())) {
 
             writter.write(indent(3)
-                + "<column name=\"" + column.getName() + "\" type=\"" + getColumnType(column) + "\">" + ENTER);
+                + COLUMN_TAG_START + column.getName() + COLUMN_TAG_TYPE + getColumnType(column) + "\">" + ENTER);
 
             writter.write(indent(4) + "<constraints nullable=\"false\"/>" + ENTER);
 
@@ -226,18 +235,12 @@ public class LiquibaseWriter {
 
         } else {
             writter.write(indent(3)
-                + "<column name=\"" + column.getName() + "\" type=\"" + getColumnType(column) + "\"/>" + ENTER);
+                + COLUMN_TAG_START + column.getName() + COLUMN_TAG_TYPE + getColumnType(column) + "\"/>" + ENTER);
         }
 
     }
 
-    private String getPrimaryKeyAttribute(Column column) {
-        if (Boolean.TRUE.equals(column.getIsPrimaryKey())) {
-            return "primaryKey=true";
-        }
 
-        return "";
-    }
 
     /**
      * Generate insert statement of Liquibase for tables.
@@ -359,7 +362,7 @@ public class LiquibaseWriter {
         }
 
         writter.write(indent(3)
-            + "<column name=\"" + column.getName() + "\" type=\"" + columnType + "\"/>" + ENTER);
+            + COLUMN_TAG_START + column.getName() + COLUMN_TAG_TYPE + columnType + "\"/>" + ENTER);
 
     }
 

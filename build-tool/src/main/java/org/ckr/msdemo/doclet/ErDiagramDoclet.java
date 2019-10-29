@@ -1,7 +1,7 @@
 package org.ckr.msdemo.doclet;
 
-import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.LanguageVersion;//NOSONAR
+import com.sun.javadoc.RootDoc;//NOSONAR
 import org.ckr.msdemo.doclet.model.DataModel;
 import org.ckr.msdemo.doclet.util.DocletUtil;
 import org.ckr.msdemo.doclet.writter.ErDiagramWriter;
@@ -10,6 +10,10 @@ import org.ckr.msdemo.doclet.writter.ErDiagramWriter;
  * Created by Administrator on 2017/11/11.
  */
 public class ErDiagramDoclet {
+
+    private ErDiagramDoclet() {
+
+    }
 
     public static boolean start(RootDoc root) {
 

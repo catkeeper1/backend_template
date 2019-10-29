@@ -1,6 +1,7 @@
 package org.ckr.msdemo.doclet.util;
 
-import com.sun.javadoc.*;
+import com.sun.javadoc.*;//NOSONAR
+import org.ckr.msdemo.doclet.exception.DocletException;
 import org.ckr.msdemo.doclet.model.Column;
 
 import java.io.File;
@@ -12,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility that contains meta statements and useful methods.
@@ -30,6 +35,20 @@ public class DocletUtil {
 
     public static final String DOC_END = "</databaseChangeLog>";
 
+
+    private static final Logger LOG = Logger.getLogger(DocletUtil.class.toString());
+
+    static {
+        Handler console = new ConsoleHandler();
+        console.setLevel(Level.FINE);
+        LOG.addHandler(console);
+    }
+
+
+    private DocletUtil() {
+
+    }
+
     public static void writeChangeSet(OutputStreamWriter writter, String changeId) throws IOException {
         writter.write(indent(1) + "<changeSet author=\"liquibase-docs\" id=\""
             + changeId + "\">" + ENTER);
@@ -42,9 +61,13 @@ public class DocletUtil {
 
     public static final String CHANGE_SET_END = indent(1) + "</changeSet>" + ENTER;
 
-    public static void logMsg(String msg) {
-        //can be replaced by other logger later.
-        System.out.println(msg);
+    public static void logMsg(Object msg) {
+
+        System.out.println(msg);//NOSONAR
+
+        String strMsg = msg == null ? "" : msg.toString();
+        LOG.info(strMsg);
+
     }
 
     /**
@@ -62,7 +85,7 @@ public class DocletUtil {
             return null;
         }
 
-        List<AnnotationDesc> result = new ArrayList<AnnotationDesc>();
+
 
         for (AnnotationDesc annotation : anntations) {
             if (qualifiedName.equals(annotation.annotationType().qualifiedName())) {
@@ -127,7 +150,7 @@ public class DocletUtil {
      */
     public static List<MethodDoc> findMethodWithAnnotation(ClassDoc classDoc, String qualifiedName) {
 
-        List<MethodDoc> result = new ArrayList<MethodDoc>();
+        List<MethodDoc> result = new ArrayList<>();
 
         if (classDoc.methods() == null) {
             return result;
@@ -161,7 +184,7 @@ public class DocletUtil {
             return "";
         }
 
-        return classDoc.qualifiedTypeName().substring(0, classDoc.qualifiedTypeName().lastIndexOf("."));
+        return classDoc.qualifiedTypeName().substring(0, classDoc.qualifiedTypeName().lastIndexOf('.'));
 
     }
 
@@ -208,10 +231,10 @@ public class DocletUtil {
 
         while (tokenizer.hasMoreTokens()) {
             result = new File(result, tokenizer.nextToken());
-            if (!result.exists()) {
-                if (!result.mkdirs()) {
-                    throw new RuntimeException("Cannot create directory " + result.getAbsolutePath());
-                }
+            if (!result.exists() && !result.mkdirs()) {
+
+                throw new DocletException("Cannot create directory " + result.getAbsolutePath());
+
             }
         }
 
@@ -252,53 +275,66 @@ public class DocletUtil {
     public static String getColumnType(Column column) {
         String result = "";
 
-        Integer length = null;
-        Integer scale = null;
-        Integer precision = null;
+        ColumnInfo colInfo = getDefaultColumnInfoByJavaType(column.getJavaFieldType());
 
-        if (String.class.getName().equals(column.getJavaFieldType())) {
-            length = 100;
-            result = "java.sql.Types.VARCHAR";
-        } else if (Boolean.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.BOOLEAN";
-        } else if (Date.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.DATE";
-        } else if (java.sql.Date.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.DATE";
-        } else if (Timestamp.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.TIMESTAMP";
-        } else if (Long.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.BIGINT";
-        } else if (Integer.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.INTEGER";
-        } else if (Short.class.getName().equals(column.getJavaFieldType())) {
-            result = "java.sql.Types.SMALLINT";
-        } else if (BigDecimal.class.getName().equals(column.getJavaFieldType())) {
-            scale = 19;
-            precision = 4;
-            result = "java.sql.Types.DECIMAL";
-        }
+
 
         if (column.getColumnDefinition() != null && column.getColumnDefinition().trim().length() > 0) {
             result = column.getColumnDefinition();
         }
 
         if (column.getLength() != null) {
-            length = column.getLength();
+            colInfo.length = column.getLength();
         }
 
         if (column.getScale() != null) {
-            scale = column.getScale();
+            colInfo.scale = column.getScale();
         }
 
         if (column.getPrecision() != null) {
-            precision = column.getPrecision();
+            colInfo.precision = column.getPrecision();
         }
 
-        if (length != null) {
-            result = result + "(" + length + ")";
-        } else if (scale != null) {
-            result = result + "(" + scale + ", " + precision + ")";
+        if (colInfo.length != null) {
+            result = result + "(" + colInfo.length + ")";
+        } else if (colInfo.scale != null) {
+            result = result + "(" + colInfo.scale + ", " + colInfo.precision + ")";
+        }
+
+        return result;
+    }
+
+    private static class ColumnInfo {
+        Integer length = null;
+        Integer scale = null;
+        Integer precision = null;
+        String columnType = null;
+    }
+
+    private static ColumnInfo getDefaultColumnInfoByJavaType(String javaFieldType) {
+        ColumnInfo result = new ColumnInfo();
+
+        if (String.class.getName().equals(javaFieldType)) {
+            result.length = 100;
+            result.columnType = "java.sql.Types.VARCHAR";
+        } else if (Boolean.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.BOOLEAN";
+        } else if (Date.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.DATE";
+        } else if (java.sql.Date.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.DATE";
+        } else if (Timestamp.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.TIMESTAMP";
+        } else if (Long.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.BIGINT";
+        } else if (Integer.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.INTEGER";
+        } else if (Short.class.getName().equals(javaFieldType)) {
+            result.columnType = "java.sql.Types.SMALLINT";
+        } else if (BigDecimal.class.getName().equals(javaFieldType)) {
+            result.scale = 19;
+            result.precision = 4;
+            result.columnType = "java.sql.Types.DECIMAL";
         }
 
         return result;

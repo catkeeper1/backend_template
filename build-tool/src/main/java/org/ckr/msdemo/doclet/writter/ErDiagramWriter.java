@@ -1,5 +1,6 @@
 package org.ckr.msdemo.doclet.writter;
 
+import org.ckr.msdemo.doclet.exception.DocletException;
 import org.ckr.msdemo.doclet.model.Column;
 import org.ckr.msdemo.doclet.model.ForeignKey;
 import org.ckr.msdemo.doclet.model.Table;
@@ -35,7 +36,7 @@ public class ErDiagramWriter {
         File file = new File(outputFilePath);
 
         if (file.isDirectory()) {
-            throw new RuntimeException(file.getAbsolutePath() + " is not a directory.");
+            throw new DocletException(file.getAbsolutePath() + " is not a directory.");
         }
 
         if (!file.exists()) {
@@ -45,10 +46,13 @@ public class ErDiagramWriter {
                     parentDir.mkdirs();
                 }
 
-                file.createNewFile();
+                if(!file.createNewFile()) {
+                    throw new DocletException("cannot create file " + file.getAbsolutePath());
+                }
+
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("cannot create file " + file.getAbsolutePath(), e);
+
+                throw new DocletException("cannot create file " + file.getAbsolutePath(), e);
             }
         }
 
@@ -117,7 +121,7 @@ public class ErDiagramWriter {
 
             String columnName = column.getName();
 
-            if(column.getIsPrimaryKey()) {
+            if(Boolean.TRUE.equals(column.getIsPrimaryKey())) {
                 columnName = "**" + column.getName() + "**";
             }
 
@@ -146,36 +150,36 @@ public class ErDiagramWriter {
 
     }
 
+    private boolean validateForeignKey (ForeignKey foreignKey) {
+        boolean invalid = false;
+        if(foreignKey.getSourceColumnNames() == null ||
+                foreignKey.getSourceColumnNames().isEmpty() ||
+                foreignKey.getTargetColumnNames() == null ||
+                foreignKey.getTargetColumnNames().isEmpty()) {
+            logMsg("invalid source/target columns. FK = " + foreignKey);
+            invalid = true;
+        }
+
+        if(foreignKey.getSourceColumnNames().size() != foreignKey.getTargetColumnNames().size()) {
+            logMsg("invalid source/target columns size. FK = " + foreignKey);
+            invalid = true;
+        }
+
+        return !invalid;
+    }
+
     private void writeRelationShip(OutputStreamWriter writer, Table table) throws IOException {
         for(ForeignKey foreignKey : table.getForeignKeyList()) {
-            if(foreignKey.getSourceColumnNames() == null ||
-               foreignKey.getSourceColumnNames().isEmpty() ||
-               foreignKey.getTargetColumnNames() == null ||
-               foreignKey.getTargetColumnNames().isEmpty()) {
-                logMsg("invalid source/target columns. FK = " + foreignKey);
+
+            if(!validateForeignKey(foreignKey)) {
                 continue;
             }
-
-            if(foreignKey.getSourceColumnNames().size() != foreignKey.getTargetColumnNames().size()) {
-                logMsg("invalid source/target columns size. FK = " + foreignKey);
-                continue;
-            }
-
-
 
             writer.write(foreignKey.getSourceTableName());
 
 
-            writer.write(" \"");
-            boolean first = true;
-            for(String sourceColumnName: foreignKey.getSourceColumnNames()) {
-                if(!first) {
-                    writer.write(",");
-                }
-                writer.write(sourceColumnName);
-                first = false;
-            }
-            writer.write("\" ");
+            writeRelationshipFieldNames(writer, foreignKey.getSourceColumnNames());
+
 
             if(foreignKey.getJoinType().equals(ForeignKey.JOIN_TYPE_MANY_TO_ONE)) {
                 //many to one.
@@ -184,22 +188,27 @@ public class ErDiagramWriter {
                 //this is one to one.
                 writer.write("|o--o|");
             }
-            writer.write(" \"");
 
-            first = true;
-            for(String targetColumnName: foreignKey.getTargetColumnNames()) {
-                if(!first) {
-                    writer.write(",");
-                }
-                writer.write(targetColumnName);
-                first = false;
-            }
-            writer.write("\" ");
+            writeRelationshipFieldNames(writer, foreignKey.getTargetColumnNames());
+
             writer.write(foreignKey.getTargetTableName());
 
             writer.write(DocletUtil.ENTER);
             writer.write(DocletUtil.ENTER);
         }
+    }
+
+    private void writeRelationshipFieldNames(OutputStreamWriter writer, List<String> fieldNames) throws IOException{
+        writer.write(" \"");
+        boolean first = true;
+        for(String sourceColumnName: fieldNames) {
+            if(!first) {
+                writer.write(",");
+            }
+            writer.write(sourceColumnName);
+            first = false;
+        }
+        writer.write("\" ");
     }
 
     private void writeFooter(OutputStreamWriter writer) throws IOException  {

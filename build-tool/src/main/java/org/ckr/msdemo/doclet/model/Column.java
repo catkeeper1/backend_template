@@ -1,14 +1,15 @@
 package org.ckr.msdemo.doclet.model;
 
-import com.sun.javadoc.AnnotationDesc;
-import com.sun.javadoc.AnnotationValue;
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.AnnotationDesc;//NOSONAR
+import com.sun.javadoc.AnnotationValue;//NOSONAR
+import com.sun.javadoc.ClassDoc;//NOSONAR
+import com.sun.javadoc.MethodDoc;//NOSONAR
 import org.ckr.msdemo.doclet.util.AnnotationScanTemplate;
 import org.ckr.msdemo.doclet.util.DocletUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Administrator on 2017/6/15.
@@ -186,7 +187,7 @@ public class Column {
             if(column != null) {
                 column.setIsPrimaryKey(isPk);
                 resultList.add(column);
-                continue;
+
             }
 
 
@@ -260,7 +261,7 @@ public class Column {
             result.addAll(embeddedColumns);
         }
 
-        if (result.size() > 0 && classDoc.superclass() != null) {
+        if (!result.isEmpty() && classDoc.superclass() != null) {
 
             List<Column> superClassResult = createColumns(classDoc.superclass());
 
@@ -313,59 +314,24 @@ public class Column {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-
-        Column column = (Column) object;
-
-        if (name != null ? !name.equals(column.name) : column.name != null) {
-            return false;
-        }
-        if (nullable != null ? !nullable.equals(column.nullable) : column.nullable != null) {
-            return false;
-        }
-        if (isPrimaryKey != null ? !isPrimaryKey.equals(column.isPrimaryKey) : column.isPrimaryKey != null) {
-            return false;
-        }
-        if (columnDefinition != null ? !columnDefinition.equals(column.columnDefinition)
-            : column.columnDefinition != null) {
-            return false;
-        }
-        if (length != null ? !length.equals(column.length) : column.length != null) {
-            return false;
-        }
-        if (precision != null ? !precision.equals(column.precision) : column.precision != null) {
-            return false;
-        }
-        if (scale != null ? !scale.equals(column.scale) : column.scale != null) {
-            return false;
-        }
-        if (javaFieldName != null ? !javaFieldName.equals(column.javaFieldName) : column.javaFieldName != null) {
-            return false;
-        }
-        if (javaFieldType != null ? !javaFieldType.equals(column.javaFieldType) : column.javaFieldType != null) {
-            return false;
-        }
-        return comment != null ? comment.equals(column.comment) : column.comment == null;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Column column = (Column) o;
+        return Objects.equals(name, column.name) &&
+                Objects.equals(nullable, column.nullable) &&
+                Objects.equals(isPrimaryKey, column.isPrimaryKey) &&
+                Objects.equals(columnDefinition, column.columnDefinition) &&
+                Objects.equals(length, column.length) &&
+                Objects.equals(precision, column.precision) &&
+                Objects.equals(scale, column.scale) &&
+                Objects.equals(javaFieldName, column.javaFieldName) &&
+                Objects.equals(javaFieldType, column.javaFieldType) &&
+                Objects.equals(comment, column.comment);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (nullable != null ? nullable.hashCode() : 0);
-        result = 31 * result + (isPrimaryKey != null ? isPrimaryKey.hashCode() : 0);
-        result = 31 * result + (columnDefinition != null ? columnDefinition.hashCode() : 0);
-        result = 31 * result + (length != null ? length.hashCode() : 0);
-        result = 31 * result + (precision != null ? precision.hashCode() : 0);
-        result = 31 * result + (scale != null ? scale.hashCode() : 0);
-        result = 31 * result + (javaFieldName != null ? javaFieldName.hashCode() : 0);
-        result = 31 * result + (javaFieldType != null ? javaFieldType.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        return result;
+        return Objects.hash(name, nullable, isPrimaryKey, columnDefinition, length, precision, scale, javaFieldName, javaFieldType, comment);
     }
 }

@@ -1,7 +1,7 @@
 package org.ckr.msdemo.doclet.model;
 
-import com.sun.javadoc.AnnotationValue;
-import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.AnnotationValue;//NOSONAR
+import com.sun.javadoc.ClassDoc;//NOSONAR
 import org.ckr.msdemo.doclet.util.AnnotationScanTemplate;
 import org.ckr.msdemo.doclet.util.DocletUtil;
 
@@ -136,9 +136,7 @@ public class Table {
 
         instance.setComment(classDoc.commentText());
 
-//        List<ForeignKey> foreignKeyList = ForeignKey.createForeignKeys(classDoc);
-//
-//        instance.setForeignKeyList(foreignKeyList);
+
 
         logMsg("create entity object for classDoc: " + classDoc);
         logMsg("table: " + instance);
@@ -162,71 +160,7 @@ public class Table {
 
     }
 
-    public static Table convertFromJoinTable(JoinTable joinTable, List<Table> existTables) {
-        Table result = new Table();
 
-        result.setTableName(joinTable.getTableName());
-
-
-        Table joinedTable = null;
-
-        for (Table table : existTables) {
-            if (table.getFullClassName().equals(joinTable.getJoinFullClassName())) {
-                joinedTable = table;
-                break;
-            }
-        }
-
-        if (joinedTable == null) {
-            throw new RuntimeException("Cannot find joined table for:" + joinTable);
-        }
-
-        result.setPackageName(joinedTable.getPackageName());
-
-        Table inversedTable = null;
-
-        for (Table table : existTables) {
-            if (table.getFullClassName().equals(joinTable.getInverseFullClassName())) {
-                inversedTable = table;
-                break;
-            }
-        }
-
-        if (inversedTable == null) {
-            throw new RuntimeException("Cannot find inversed table for:" + joinTable);
-        }
-
-        List<Column> resultColumnList = new ArrayList<>();
-
-        for (Column joinColumn : joinTable.getJoinColumnList()) {
-
-            for (Column column : joinedTable.getColumnList()) {
-                if (joinColumn.getName().equals(column.getName())) {
-                    resultColumnList.add(column);
-                }
-            }
-
-        }
-
-        for (Column invesColumn : joinTable.getInverseColumnList()) {
-
-            for (Column column : inversedTable.getColumnList()) {
-                if (invesColumn.getName().equals(column.getName())) {
-                    resultColumnList.add(column);
-                }
-            }
-
-        }
-
-
-        result.setClassName("");
-
-        result.setColumnList(resultColumnList);
-
-        DocletUtil.logMsg("converted table:" + result.toString());
-
-        return result;
-    }
 
     public void setForeignKeyInfo(Map<String, List<ForeignKey>> foreignKeyMap) {
         List<ForeignKey> fkList = foreignKeyMap.get(this.tableName);

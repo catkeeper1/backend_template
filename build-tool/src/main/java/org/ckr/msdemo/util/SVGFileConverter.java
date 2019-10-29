@@ -2,8 +2,11 @@ package org.ckr.msdemo.util;
 
 import org.apache.batik.apps.rasterizer.*;
 import org.apache.tools.ant.DirectoryScanner;
+import org.ckr.msdemo.doclet.exception.DocletException;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +42,7 @@ public class SVGFileConverter {
         }
 
         if(destinationFolder.isFile()) {
-            throw new RuntimeException("Destination folder "+ destinationFolder.getAbsolutePath() +" is a file.");
+            throw new DocletException("Destination folder "+ destinationFolder.getAbsolutePath() +" is a file.");
         }
 
         return this;
@@ -54,11 +57,11 @@ public class SVGFileConverter {
         this.sourceFolder = sourceFolder;
 
         if(!sourceFolder.exists()) {
-            throw new RuntimeException("Source folder " + sourceFolder.getAbsolutePath() +" is not exist.");
+            throw new DocletException("Source folder " + sourceFolder.getAbsolutePath() +" is not exist.");
         }
 
         if(sourceFolder.isFile()) {
-            throw new RuntimeException("Source folder " + sourceFolder.getAbsolutePath() + " is a file.");
+            throw new DocletException("Source folder " + sourceFolder.getAbsolutePath() + " is a file.");
         }
 
         return this;
@@ -128,7 +131,7 @@ public class SVGFileConverter {
             try {
                 converter.execute();
             } catch (SVGConverterException e) {
-                throw new RuntimeException("", e);
+                throw new DocletException("", e);
             }
 
 
@@ -144,7 +147,7 @@ public class SVGFileConverter {
     public static void main(String[] args) {
 
         if(args.length != 2) {
-            throw new RuntimeException("Need to provide 2 parameters for this main method." +
+            throw new DocletException("Need to provide 2 parameters for this main method." +
                                        "The first one is the source folder. The second one is the destination folder");
         }
 
@@ -177,7 +180,7 @@ public class SVGFileConverter {
             }
 
             String orgName = source.getName();
-            int lastDoc = orgName.lastIndexOf(".");
+            int lastDoc = orgName.lastIndexOf('.');
 
             if(lastDoc > 0) {
 
@@ -190,12 +193,19 @@ public class SVGFileConverter {
 
                 //if the file is already exist, cannot rename. so that need to delete it first.
                 File existingFile = new File(newFilePath);
-                if(existingFile.exists()) {
-                    existingFile.delete();
+                if(existingFile.exists() ) {
 
+                    try {
+                        Files.delete(existingFile.toPath());
+                    } catch (IOException e) {
+                        throw new DocletException("Cannot delete file " + existingFile.getAbsolutePath(), e);
+                    }
                 }
 
-                dest.renameTo(new File(newFilePath));
+
+                if(!dest.renameTo(new File(newFilePath))){
+                    throw new DocletException("Cannot rename file to new path " + newFilePath);
+                }
             }
 
 

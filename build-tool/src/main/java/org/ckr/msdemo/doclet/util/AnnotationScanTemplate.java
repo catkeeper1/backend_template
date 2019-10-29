@@ -1,8 +1,8 @@
 package org.ckr.msdemo.doclet.util;
 
-import com.sun.javadoc.AnnotationDesc;
-import com.sun.javadoc.AnnotationValue;
-import com.sun.javadoc.ProgramElementDoc;
+import com.sun.javadoc.AnnotationDesc;//NOSONAR
+import com.sun.javadoc.AnnotationValue;//NOSONAR
+import com.sun.javadoc.ProgramElementDoc;//NOSONAR
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +32,13 @@ public class AnnotationScanTemplate<T> {
     }
 
     public AnnotationHandler<T> annotation(String qualifeidName) {
-        BasicAnnotationHandler<T> handler = new BasicAnnotationHandler<T>(qualifeidName);
+        BasicAnnotationHandler<T> handler = new BasicAnnotationHandler<>(qualifeidName);
         addAnnotationHandler(handler);
         return handler;
     }
 
     public AnnotationHandler<T> annotation(String qualifeidName, SetDataWithAnnotationFunction<T> fun) {
-        BasicAnnotationHandler<T> handler = new BasicAnnotationHandler<T>(qualifeidName, fun);
+        BasicAnnotationHandler<T> handler = new BasicAnnotationHandler<>(qualifeidName, fun);
         addAnnotationHandler(handler);
         return handler;
     }
@@ -51,7 +51,7 @@ public class AnnotationScanTemplate<T> {
             return;
         }
 
-        List<AnnotationDesc> result = new ArrayList<AnnotationDesc>();
+
 
         for (AnnotationDesc annotation : anntations) {
 
@@ -64,12 +64,12 @@ public class AnnotationScanTemplate<T> {
 
     public static <D> D scanAnnotation(D dataObject, AnnotationValue annotation) {
 
-        System.out.println(annotation.value().getClass().toString());
+        DocletUtil.logMsg(annotation.value().getClass().toString());
 
         AnnotationValue[] value = (AnnotationValue[]) annotation.value();
 
         for (AnnotationValue v : value) {
-            System.out.println(v);
+            DocletUtil.logMsg(v);
         }
 
 
@@ -162,7 +162,7 @@ public class AnnotationScanTemplate<T> {
         @Override
         public AnnotationHandler<T> attribute(String attributeName, SetDataWithAttributeFunction<T> setDataFunction) {
 
-            BasicAnnotationAttributaHandler<T> handler = new BasicAnnotationAttributaHandler<T>(attributeName,
+            BasicAnnotationAttributaHandler<T> handler = new BasicAnnotationAttributaHandler<>(attributeName,
                 setDataFunction);
             addAnnotationAttributeHandler(handler);
             return this;
@@ -206,12 +206,13 @@ public class AnnotationScanTemplate<T> {
         }
 
 
-        public boolean supported(AnnotationDesc annotation, AnnotationDesc.ElementValuePair valuePair) {
+        public boolean supported(AnnotationDesc annotation, AnnotationDesc.ElementValuePair valuePair) {//NOSONAR
             return this.attributeName.equals(valuePair.element().name());
         }
 
 
-        public void handle(T dataObject, AnnotationDesc annotation, AnnotationDesc.ElementValuePair valuePair) {
+        public void handle(T dataObject, AnnotationDesc annotation, //NOSONAR
+                           AnnotationDesc.ElementValuePair valuePair) {
             setDataFunction.setData(dataObject, valuePair.value());
         }
 

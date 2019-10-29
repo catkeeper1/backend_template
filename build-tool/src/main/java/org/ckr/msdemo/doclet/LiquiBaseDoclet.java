@@ -1,7 +1,7 @@
 package org.ckr.msdemo.doclet;
 
-import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.LanguageVersion;//NOSONAR
+import com.sun.javadoc.RootDoc;//NOSONAR
 import org.ckr.msdemo.doclet.model.DataModel;
 import org.ckr.msdemo.doclet.util.DocletUtil;
 import org.ckr.msdemo.doclet.writter.LiquibaseWriter;
@@ -10,6 +10,10 @@ import org.ckr.msdemo.doclet.writter.LiquibaseWriter;
  * Doclet to generate Liquibase config file.
  */
 public class LiquiBaseDoclet {
+
+    private LiquiBaseDoclet() {
+
+    }
 
     /**
      * Entry to start generate Liquibase config file.

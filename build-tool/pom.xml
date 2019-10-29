@@ -10,6 +10,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <properties>
+        <sonar.exclusions>
+            pom.xml
+        </sonar.exclusions>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.sun</groupId>

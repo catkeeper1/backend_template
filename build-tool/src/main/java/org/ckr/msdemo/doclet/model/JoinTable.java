@@ -1,8 +1,9 @@
 package org.ckr.msdemo.doclet.model;
 
-import com.sun.javadoc.AnnotationValue;
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.AnnotationValue;//NOSONAR
+import com.sun.javadoc.ClassDoc;//NOSONAR
+import com.sun.javadoc.MethodDoc;//NOSONAR
+import org.ckr.msdemo.doclet.exception.DocletException;
 import org.ckr.msdemo.doclet.util.AnnotationScanTemplate;
 
 import java.util.ArrayList;
@@ -65,25 +66,19 @@ public class JoinTable {
         return indexList;
     }
 
-    private void setIndexList(List<Index> indexList) {
-        this.indexList = indexList;
-    }
+
 
     public List<Column> getJoinColumnList() {
         return joinColumnList;
     }
 
-    private void setJoinColumnList(List<Column> joinColumnList) {
-        this.joinColumnList = joinColumnList;
-    }
+
 
     public List<Column> getInverseColumnList() {
         return inverseColumnList;
     }
 
-    private void setInverseColumnList(List<Column> inverseColumnList) {
-        this.inverseColumnList = inverseColumnList;
-    }
+
 
     public static List<JoinTable> createJoinTable(ClassDoc classDoc, List<Table> existTableList) {
 
@@ -137,16 +132,17 @@ public class JoinTable {
 
                 inverseType = getParameterTypeName(method.returnType());
 
-            } else if (method.name().startsWith("set")) {
+            } else if (method.name().startsWith("set") &&
+                      method.parameters() != null &&
+                      method.parameters().length > 0) {
 
-                if (method.parameters() != null && method.parameters().length > 0) {
-                    inverseType = getParameterTypeName(method.parameters()[0].type());
-                }
+                inverseType = getParameterTypeName(method.parameters()[0].type());
+
 
             }
 
             if (inverseType == null) {
-                throw new RuntimeException("cannot get join class type. method is "
+                throw new DocletException("cannot get join class type. method is "
                     + method.qualifiedName()
                     + ".class name is " + classDoc.qualifiedName());
             }

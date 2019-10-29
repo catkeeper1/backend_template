@@ -1,7 +1,7 @@
 package org.ckr.msdemo.doclet.model;
 
-import com.sun.javadoc.AnnotationDesc;
-import com.sun.javadoc.AnnotationValue;
+import com.sun.javadoc.AnnotationDesc;//NOSONAR
+import com.sun.javadoc.AnnotationValue;//NOSONAR
 import org.ckr.msdemo.doclet.util.AnnotationScanTemplate;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class Index {
         Index result = new Index();
 
         AnnotationScanTemplate.BasicAnnotationHandler<Index> annotationHandler =
-            new AnnotationScanTemplate.BasicAnnotationHandler<Index>();
+            new AnnotationScanTemplate.BasicAnnotationHandler<>();
 
 
         annotationHandler

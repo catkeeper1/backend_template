@@ -3,17 +3,8 @@ package org.ckr.msdemo.adminservice.entity;
 import com.google.common.base.MoreObjects;
 import org.ckr.msdemo.entity.BaseEntity;
 
+import javax.persistence.*;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 /**
  * Store the principal that is used to login the system.
@@ -21,8 +12,8 @@ import javax.persistence.Table;
  */
 @Entity()
 @Table(name = "USER",
-        indexes = {@Index(name = "user_index_1", columnList = "USER_DESCRIPTION ASC ,IS_LOCKED DESC", unique = true),
-                @Index(name = "user_index_2", columnList = "IS_LOCKED", unique = false)})
+       indexes = {@Index(name = "user_index_1", columnList = "USER_DESCRIPTION ASC ,IS_LOCKED DESC", unique = true),
+                  @Index(name = "user_index_2", columnList = "IS_LOCKED", unique = false)})
 public class User extends BaseEntity {
 
     private static final long serialVersionUID = 7028458717583173058L;
@@ -113,8 +104,8 @@ public class User extends BaseEntity {
      */
     @ManyToMany()
     @JoinTable(name = "USER_TO_USER_ROLE_MAP",
-            joinColumns = {@JoinColumn(name = "USER_NAME", updatable = false, insertable = false)},
-            inverseJoinColumns = {@JoinColumn(name = "ROLE_CODE", updatable = false, insertable = false)})
+        joinColumns = {@JoinColumn(name = "USER_NAME", updatable = false, insertable = false)},
+        inverseJoinColumns = {@JoinColumn(name = "ROLE_CODE", updatable = false, insertable = false)})
     public List<UserRole> getRoles() {
         return roles;
     }

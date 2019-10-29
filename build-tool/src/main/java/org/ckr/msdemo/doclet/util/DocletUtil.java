@@ -277,7 +277,7 @@ public class DocletUtil {
 
         ColumnInfo colInfo = getDefaultColumnInfoByJavaType(column.getJavaFieldType());
 
-
+        result = colInfo.columnType;
 
         if (column.getColumnDefinition() != null && column.getColumnDefinition().trim().length() > 0) {
             result = column.getColumnDefinition();
@@ -296,9 +296,9 @@ public class DocletUtil {
         }
 
         if (colInfo.length != null) {
-            result = result + "(" + colInfo.length + ")";
+            result = colInfo.columnType + "(" + colInfo.length + ")";
         } else if (colInfo.scale != null) {
-            result = result + "(" + colInfo.scale + ", " + colInfo.precision + ")";
+            result = colInfo.columnType + "(" + colInfo.scale + ", " + colInfo.precision + ")";
         }
 
         return result;

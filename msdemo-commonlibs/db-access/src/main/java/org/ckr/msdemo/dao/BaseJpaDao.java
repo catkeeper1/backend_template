@@ -1,6 +1,8 @@
 package org.ckr.msdemo.dao;
 
 import org.ckr.msdemo.util.DbAccessUtil;
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -16,7 +18,7 @@ import java.util.function.Function;
  * entity manager object(used to manipulate DB through JPA API), define some util methods that are convenient for
  * DB query.
  */
-public class BaseJpaDao {
+public class BaseJpaDao implements InitializingBean {
 
     /**
      * An reference to an JPA Entity manager.
@@ -36,10 +38,7 @@ public class BaseJpaDao {
     }
 
     private EntityManager getEntityManager() {
-        if (entityManager == null) {
-            throw new RuntimeException("entity manager is not initialized. "
-                                      + "Please use setEntityManager() method to inject an entity manager.");
-        }
+
 
         return entityManager;
     }
@@ -70,8 +69,16 @@ public class BaseJpaDao {
         DbAccessUtil.setQueryParameter(query, params);
 
         List rawResultList = query.getResultList();
-        List<T> resultList = DbAccessUtil.convertRawListToTargetList(rawResultList, mapper);
 
-        return resultList;
+        return DbAccessUtil.convertRawListToTargetList(rawResultList, mapper);
+
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (this.entityManager == null) {
+            throw new BeanInstantiationException(this.getClass(), "entity manager is not initialized. "
+                    + "Please use setEntityManager() method to inject an entity manager.");
+        }
     }
 }

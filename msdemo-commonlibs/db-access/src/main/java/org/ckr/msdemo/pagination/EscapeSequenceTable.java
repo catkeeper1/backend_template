@@ -981,5 +981,5 @@ package org.ckr.msdemo.pagination;
  *
  * <p>This class will be deleted after this referencing table is moved to other place.
  */
-public class EscapeSequenceTable {
+public interface EscapeSequenceTable {
 }

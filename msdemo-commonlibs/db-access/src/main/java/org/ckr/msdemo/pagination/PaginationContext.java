@@ -76,19 +76,17 @@ public class PaginationContext {
         HttpServletRequest request =
             ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        if (request == null) {
-            return;
-        }
+
 
         QueryRequest queryRequest = new QueryRequest();
-        queryRequest = parsePageRange(queryRequest, request);
+        parsePageRange(queryRequest, request);
 
         if (queryRequest.getStart() == null) {
             return;
         }
 
-        queryRequest = parseSortBy(queryRequest, request);
-        queryRequest = parseFilterBy(queryRequest, request);
+        parseSortBy(queryRequest, request);
+        parseFilterBy(queryRequest, request);
 
         LOG.debug("queryRequest = {}", queryRequest);
 
@@ -238,33 +236,41 @@ public class PaginationContext {
         while (tokenizer.hasMoreTokens()) {
             String criteriaStr = tokenizer.nextToken();
 
-            if (criteriaStr.length() <= 1) {
-                LOG.error("invlaid sort critiera:{}", criteriaStr);
-                continue;
+            SortCriteria sortCriteria = parseSortByCriteria(criteriaStr);
+
+            if(sortCriteria != null) {
+                sortCriteriaList.add(sortCriteria);
             }
-
-            SortCriteria sortCriteria = new SortCriteria();
-
-            if (criteriaStr.startsWith(" ") || criteriaStr.startsWith("+")) {
-                sortCriteria.setAsc(true);
-
-            } else if (criteriaStr.startsWith("-")) {
-                sortCriteria.setAsc(false);
-            } else {
-                LOG.warn("invlaid sort critiera:{}", criteriaStr);
-                continue;
-            }
-
-            sortCriteria.setFieldName(criteriaStr.substring(1));
-
-            LOG.debug("sortCriteria.fieldName = {}, asc = {}", sortCriteria.getFieldName(), sortCriteria.isAsc());
-
-            sortCriteriaList.add(sortCriteria);
         }
 
         request.setSortCriteriaList(sortCriteriaList);
 
         return request;
+    }
+
+    private static SortCriteria parseSortByCriteria(String criteriaStr) {
+        if (criteriaStr.length() <= 1) {
+            LOG.error("invlaid sort critiera:{}", criteriaStr);
+            return null;
+        }
+
+        SortCriteria sortCriteria = new SortCriteria();
+
+        if (criteriaStr.startsWith(" ") || criteriaStr.startsWith("+")) {
+            sortCriteria.setAsc(true);
+
+        } else if (criteriaStr.startsWith("-")) {
+            sortCriteria.setAsc(false);
+        } else {
+            LOG.warn("invlaid sort critiera:{}", criteriaStr);
+            return null;
+        }
+
+        sortCriteria.setFieldName(criteriaStr.substring(1));
+
+        LOG.debug("sortCriteria.fieldName = {}, asc = {}", sortCriteria.getFieldName(), sortCriteria.isAsc());
+
+        return sortCriteria;
     }
 
 
@@ -280,7 +286,7 @@ public class PaginationContext {
 
         LOG.debug("parseFilterBy(). filterByStr = {}", filterByStr);
 
-        StringTokenizer tokenizer = new StringTokenizer(filterByStr, ",");
+
 
         List<String> criteriaStrList = splitFilterString(filterByStr);
 
@@ -288,17 +294,14 @@ public class PaginationContext {
 
         for (String criteriaStr : criteriaStrList) {
 
-            if (criteriaStr.length() <= 1) {
-                LOG.warn("invlaid filter critiera:{}", criteriaStr);
-                continue;
+
+
+            FilterCriteria filterCriteria = parseFilterCriteria(criteriaStr);
+            if(filterCriteria != null) {
+                filterCriteriaList.add(filterCriteria);
             }
 
-            FilterCriteria filterCriteria = createFilterCriteria(criteriaStr);
-            if(filterCriteria == null) {
-                continue;
-            }
 
-            filterCriteriaList.add(filterCriteria);
 
         }
 
@@ -307,48 +310,13 @@ public class PaginationContext {
         return request;
     }
 
+
     static List<String> splitFilterString(String filterByStr) {
         List<String> result = new ArrayList<>();
         if (StringUtils.isEmpty(filterByStr)) {
             return result;
         }
-//        StringTokenizer tokenizer = new StringTokenizer(filterByStr, ",",true);
-//
-//
-//        while (tokenizer.hasMoreTokens()) {
-//            StringBuilder oneRecord = new StringBuilder();
-//            String curToken = tokenizer.nextToken();
-//
-//            if (",".equals(curToken)) {
-//                continue;
-//            }
-//
-//            oneRecord.append(curToken);
-//
-//            while (tokenizer.hasMoreTokens()) {
-//
-//                String tmpToken = tokenizer.nextToken();
-//
-//                if (oneRecord.lastIndexOf("\\") == ( oneRecord.length() - 1 )) {
-//                    oneRecord.append(tmpToken);
-//                    continue;
-//                }
-//
-//                if (oneRecord.lastIndexOf(",") == ( oneRecord.length() - 1 )) {
-//                    if (",".equals(tmpToken)) {
-//                        break;
-//                    } else {
-//                        oneRecord.append(tmpToken);
-//                        continue;
-//                    }
-//                }
-//                break;
-//
-//            }
-//            if(oneRecord.length() > 0) {
-//                result.add(oneRecord.toString());
-//            }
-//        }
+
 
         int start = 0;
         int end = 0;
@@ -357,7 +325,7 @@ public class PaginationContext {
 
         while (end < totalLength) {
 
-            char curChar = filterByStr.charAt(end);
+
 
             if (isDelim(filterByStr, end)) {
 
@@ -376,18 +344,22 @@ public class PaginationContext {
         return result;
     }
 
-    static private boolean isDelim(String str, int index) {
-        if (str.charAt(index) == ',') {
-            if (index > 0 && str.charAt(index - 1) == '\\') {
-                return false;
-            }
+    private static boolean isDelim(String str, int index) {
 
-            return true;
-        }
-        return false;
+        boolean isComma = (str.charAt(index) == ',');
+
+        boolean preCharIsNotBackslash = !(index > 0 && str.charAt(index - 1) == '\\');
+
+        return isComma && preCharIsNotBackslash;
     }
 
-    private static FilterCriteria createFilterCriteria(String criteriaStr) {
+    private static FilterCriteria parseFilterCriteria(String criteriaStr) {
+
+        if (criteriaStr.length() <= 1) {
+            LOG.warn("invlaid filter critiera:{}", criteriaStr);
+            return null;
+        }
+
         FilterCriteria filterCriteria = new FilterCriteria();
 
         StringTokenizer tokenizer = new StringTokenizer(criteriaStr, "|");
@@ -596,7 +568,7 @@ public class PaginationContext {
 
         private String symbol;
 
-        private static Map<String, FilterOperator> FILTER_TYPE_MAP = new HashMap<>();
+        private static final Map<String, FilterOperator> FILTER_TYPE_MAP = new HashMap<>();
 
         static {
             FILTER_TYPE_MAP.put("=", FilterOperator.EQUALS);

@@ -16,6 +16,7 @@ public class AuditEntityListener {
      * properly.
      */
     public AuditEntityListener() {
+        super();
     }
 
     /**

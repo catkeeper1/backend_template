@@ -150,7 +150,7 @@ public class JpaRestPaginationService {
         doQueryTotalNoRecords(response, resultList.size(), queryRequest, queryStr, params);
         PaginationContext.setResponseInfo(response.getStart(), response.getEnd(), response.getTotal());
 
-        //TransactionAttribute att = TransactionInfoHolder.getTransactionAttribute();
+
 
         return resultList;
     }
@@ -218,14 +218,19 @@ public class JpaRestPaginationService {
         if (request.getStart() == null) {
             request.setStart((long) 0);
         }
-        if (maxNoRecordsPerPage != null) {
-            if (request.getEnd() == null || request.getEnd() - request.getStart() > maxNoRecordsPerPage - 1) {
-                //make sure the total number records will not exceed the maxNoRecordPerPage
-                request.setEnd(request.getStart() + maxNoRecordsPerPage - 1);
-            }
+        if (maxNoRecordsPerPage != null &&
+            exceedMaxNoRecords(request, maxNoRecordsPerPage)) {
+            //make sure the total number records will not exceed the maxNoRecordPerPage
+            request.setEnd(request.getStart() + maxNoRecordsPerPage - 1);
+
         }
 
         return request;
+    }
+
+    private boolean exceedMaxNoRecords(QueryRequest request, Long maxNoRecordsPerPage) {
+        return request.getEnd() == null ||
+                (request.getEnd() - request.getStart() > maxNoRecordsPerPage - 1);
     }
 
     private void doQueryTotalNoRecords(QueryResponse response,
@@ -245,14 +250,14 @@ public class JpaRestPaginationService {
 
         LOG.debug("get total no of records JPQL:{}", queryString);
 
-        Query query = (Query) entityManager.createQuery(queryString);
+        Query query = entityManager.createQuery(queryString);
 
         DbAccessUtil.setQueryParameter(query, params);
 
         response.setTotal((Long) query.getSingleResult());
         LOG.info("getContent = {}", contentSize);
         LOG.debug("total number of records {}", response.getTotal());
-        return;
+
     }
 
     private String getQlForTotalNoRecords(String queryStr) {
@@ -262,9 +267,9 @@ public class JpaRestPaginationService {
         String upperQueryStr = queryStr.toUpperCase();
 
 
-        int start = queryStr.indexOf("(");
+        int start = queryStr.indexOf('(');
 
-        int end = queryStr.indexOf(")");
+        int end = queryStr.indexOf(')');
 
         int fromIndex;
 
@@ -272,14 +277,13 @@ public class JpaRestPaginationService {
 
         do {
             if (queryStrLen < 0) {
-                LOG.info("cannot find a top level 'FROM' from query string: '"
-                    + queryStr + "' . The i is < 0 already");
+                LOG.info("cannot find a top level 'FROM' from query string: '{}' . The i is < 0 already", queryStr);
             }
 
             fromIndex = upperQueryStr.lastIndexOf("FROM", queryStrLen);
             if (fromIndex < 0) {
-                LOG.info("cannot find a top level 'FROM' from query string: '"
-                    + queryStr + "' . Cannot find 'FROM'. The i = " + queryStrLen);
+                LOG.info("cannot find a top level 'FROM' from query string: '{}'" +
+                        " . Cannot find 'FROM'. The i = {}", queryStr, queryStrLen);
             }
 
             if (fromIndex <= end && fromIndex >= start) {

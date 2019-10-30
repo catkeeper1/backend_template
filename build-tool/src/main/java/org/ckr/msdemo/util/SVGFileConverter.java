@@ -144,6 +144,7 @@ public class SVGFileConverter {
 
     }
 
+    @SuppressWarnings("squid:S4823")
     public static void main(String[] args) {
 
         if(args.length != 2) {

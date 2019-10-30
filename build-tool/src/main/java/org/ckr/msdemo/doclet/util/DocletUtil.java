@@ -38,10 +38,11 @@ public class DocletUtil {
 
     private static final Logger LOG = Logger.getLogger(DocletUtil.class.toString());
 
+
     static {
         Handler console = new ConsoleHandler();
         console.setLevel(Level.FINE);
-        LOG.addHandler(console);
+        LOG.addHandler(console);//NOSONAR
     }
 
 

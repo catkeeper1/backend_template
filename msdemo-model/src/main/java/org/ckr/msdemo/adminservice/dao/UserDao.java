@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 public class UserDao extends BaseJpaDao {
 
     @Autowired
+    @Override
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

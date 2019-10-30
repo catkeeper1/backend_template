@@ -150,6 +150,7 @@ public class User extends BaseEntity {
     }
 
     @Override
+    @SuppressWarnings("squid:S2068")
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("userName", userName)

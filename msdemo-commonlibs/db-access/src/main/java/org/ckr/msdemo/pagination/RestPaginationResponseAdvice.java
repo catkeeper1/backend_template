@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @RestControllerAdvice()
 public class RestPaginationResponseAdvice implements ResponseBodyAdvice<Object> {
 
-    private static Logger LOG = LoggerFactory.getLogger(RestPaginationResponseAdvice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RestPaginationResponseAdvice.class);
 
     /**
      * Indicate whether the
@@ -46,6 +46,7 @@ public class RestPaginationResponseAdvice implements ResponseBodyAdvice<Object> 
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 
+        LOG.debug("beforeBodyWrite. Before adjustment, the headers is {}", response.getHeaders());
         PaginationContext.setRestPaginationResponse(response);
 
         return body;

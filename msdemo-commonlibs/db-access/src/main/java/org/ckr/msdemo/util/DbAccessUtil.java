@@ -17,7 +17,11 @@ import java.util.stream.Stream;
  */
 public class DbAccessUtil {
 
-    private static Logger LOG = LoggerFactory.getLogger(DbAccessUtil.class);
+    private DbAccessUtil() {
+
+    }
+
+    private static final Logger LOG = LoggerFactory.getLogger(DbAccessUtil.class);
 
     /**
      * Adjust query string according to parameters.
@@ -133,10 +137,10 @@ public class DbAccessUtil {
 
         Stream<Object[]> stream = (Stream<Object[]>) rawResultList.stream();
 
-        List<R> resultList = stream.map(mapper)
+        return  stream.map(mapper)
                 .collect(Collectors.toList());
 
-        return resultList;
+
 
     }
 }

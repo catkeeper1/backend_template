@@ -58,7 +58,7 @@ public class PaginationInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) throws Exception {
-
+        //do nothing. Please refer the javadoc for this method.
     }
 
     /**

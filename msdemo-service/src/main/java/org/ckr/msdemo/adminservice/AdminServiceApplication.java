@@ -16,6 +16,7 @@ public class AdminServiceApplication {
      * The entry point for the admin service application.
      * @param args Parameters for spring boot application initialization.
      */
+    @SuppressWarnings("squid:S4823")
     public static void main(String[] args) {
 
         new SpringApplicationBuilder(AdminServiceApplication.class)

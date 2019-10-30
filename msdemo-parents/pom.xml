@@ -17,20 +17,33 @@
 
     <properties>
         <msdemo.skipGenLiquibaseXml>true</msdemo.skipGenLiquibaseXml>
+        <swagger.version>2.9.2</swagger.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-core</artifactId>
-                <version>3.5.3</version>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>4.0.1</version>
                 <!--<scope>provided</scope>-->
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security.oauth</groupId>
+                <artifactId>spring-security-oauth2</artifactId>
+                <version>2.3.6.RELEASE</version>
             </dependency>
 
         </dependencies>
@@ -53,11 +66,42 @@
             <version>27.0-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
 
     <build>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.9</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.github.jeluard</groupId>
+                    <artifactId>plantuml-maven-plugin</artifactId>
+                    <version>1.2</version>
+
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.sourceforge.plantuml</groupId>
+                            <artifactId>plantuml</artifactId>
+                            <version>1.2017.16</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -70,8 +114,41 @@
 
 
 
+
+
         </plugins>
+
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <!--<report>dependency-convergence</report>-->
+                            <!--<report>dependency-info</report>-->
+                            <!--<report>dependencies</report>-->
+                            <!--<report>modules</report>-->
+                            <!--<report>plugin-management</report>-->
+                            <!--<report>plugins</report>-->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+                <configuration>
+
+                </configuration>
+            </plugin>
+
+
+
+
+        </plugins>
+    </reporting>
 
 
 </project>

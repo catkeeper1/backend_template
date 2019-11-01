@@ -90,18 +90,6 @@ public class BaseException extends RuntimeException {
     }
 
 
-    //    @Override
-    //    public void printStackTrace(PrintStream stream) {
-    //        stream.append("Exception ID:" + getExceptionId());
-    //        super.printStackTrace(stream);
-    //    }
-    //
-    //    @Override
-    //    public void printStackTrace(PrintWriter writer) {
-    //        writer.append("Exception ID:" + getExceptionId());
-    //        super.printStackTrace(writer);
-    //    }
-
     /**
      * Override this method and include the exception ID in the message.
      * @return a message for this exception.

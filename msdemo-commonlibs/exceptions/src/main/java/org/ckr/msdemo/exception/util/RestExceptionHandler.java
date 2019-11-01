@@ -2,6 +2,7 @@ package org.ckr.msdemo.exception.util;
 
 import org.ckr.msdemo.exception.ApplicationException;
 import org.ckr.msdemo.exception.BaseException;
+import org.ckr.msdemo.exception.ExceptionMessage;
 import org.ckr.msdemo.exception.SystemException;
 import org.ckr.msdemo.exception.valueobject.ErrorResponse;
 import org.slf4j.Logger;
@@ -123,7 +124,7 @@ public final class RestExceptionHandler {
             updateMsgForResponse(errorResponse, appExp, messageSource, locale);
         }
 
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
@@ -131,10 +132,9 @@ public final class RestExceptionHandler {
                                             ApplicationException appExp,
                                             MessageSource messageSource,
                                             Locale locale) {
-        ArrayList<String> msgList = new ArrayList<>(appExp.getMessageList().size());
 
         for (int i = 0; i < appExp.getMessageList().size(); i++) {
-            ApplicationException.ExceptionMessage expMsg = appExp.getMessageList().get(i);
+            ExceptionMessage expMsg = appExp.getMessageList().get(i);
             LOG.debug("return exception message with msg code = {} params = {} message = {}",
                     expMsg.getMessageCode(),
                     expMsg.getMessageParams(),
@@ -157,13 +157,13 @@ public final class RestExceptionHandler {
     private static ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ae, Locale locale) {
 
         String msg = exceptionMsgSource.getMessage("org.ckr.msdemo.exception.access_denied",
-                                      null,
-                                      locale);
+                null,
+                locale);
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setExceptionId(BaseException.generateExceptionID());
         errorResponse.addMessage("access_denied", msg);
 
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

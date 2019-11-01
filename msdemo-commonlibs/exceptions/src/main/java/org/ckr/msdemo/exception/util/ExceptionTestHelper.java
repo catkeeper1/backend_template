@@ -9,12 +9,14 @@ import java.util.Locale;
 /**
  * Created by Administrator on 2017/10/15.
  */
-public class ExceptionTestUtil {
+public class ExceptionTestHelper {
+
+    private ExceptionTestHelper() {}
 
     public static boolean checkErrorMsg(MessageSource messageSource,
-                                ApplicationException appExp,
-                                String expectedMsgCode,
-                                String expectedMessage) {
+                                        ApplicationException appExp,
+                                        String expectedMsgCode,
+                                        String expectedMessage) {
 
         ErrorResponse errorResponse = new ErrorResponse();
 

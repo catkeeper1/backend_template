@@ -12,18 +12,15 @@ public class ReThrownApplicationException extends ApplicationException {
         this.exceptionId = exceptionId;
     }
 
-    /**
-     * Add message with message code and message.
-     *
-     * @param msgCode message code
-     * @param message message
-     * @return ReThrownApplicationException
-     */
-    public ReThrownApplicationException addMessage(String msgCode, String message) {
-
-        ExceptionMessage expMsg = new ExceptionMessage(msgCode, message);
-
-        messageList.add(expMsg);
-        return this;
-    }
+//    /**
+//     * Add message with message code and message.
+//     *
+//     * @param msgCode message code
+//     * @param message message
+//     * @return ReThrownApplicationException
+//     */
+//    public ReThrownApplicationException addMessage(String msgCode, String message) {
+//        super.addMessage(msgCode, message, null);
+//        return this;
+//    }
 }

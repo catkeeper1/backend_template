@@ -7,7 +7,8 @@ package org.ckr.msdemo.pagination;
  * characters cannot be shown properly until escape sequence is used. Below is an referencing table that can be used
  * to find escape sequence for a charaeter.
  *  
- * <table summary="abc" border="1">
+ * <table border="1">
+ *     <caption>abc</caption>
  * <tr><td>escape sequence</td><td>character</td></tr>
  * <tr><td>&#038;&#035;32&#059; </td><td>&#32;</td></tr>
  * <tr><td>&#038;&#035;33&#059; </td><td>&#33;</td></tr>

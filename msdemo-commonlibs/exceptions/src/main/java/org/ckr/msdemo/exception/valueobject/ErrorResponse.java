@@ -3,6 +3,7 @@ package org.ckr.msdemo.exception.valueobject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.ckr.msdemo.exception.ApplicationException;
+import org.ckr.msdemo.exception.ExceptionMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -88,16 +89,18 @@ public class ErrorResponse implements Serializable {
         }
 
         /**
-         * @see ApplicationException.ExceptionMessage#getMessageCode()
+         *
          * Because this message code can be used by client side program to identify what kind of application exception
          *     is thrown so that it is expected to be included in the response as well.
+         *
+         * @see ExceptionMessage#getMessageCode()
          */
         public String getMessageCode() {
             return messageCode;
         }
 
         /**
-         * @see ApplicationException.ExceptionMessage#getMessage()
+         * @see ExceptionMessage#getMessage()
          */
         public String getMessage() {
             return message;

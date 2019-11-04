@@ -38,6 +38,7 @@ public class PaginationContextMockedTests {
         System.out.println(PaginationInterceptor.class.getName());
         System.out.println(PaginationInterceptorConfig.class.getName());
         System.out.println(RestPaginationResponseAdvice.class.getName());
+
     }
 
     @Test
@@ -107,10 +108,6 @@ public class PaginationContextMockedTests {
 
     }
 
-    @Test
-    public void testParseFilterBy() {
-
-    }
 
     @Test
     public void testSplitFilterString() {

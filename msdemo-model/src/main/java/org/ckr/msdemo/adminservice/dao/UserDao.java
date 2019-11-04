@@ -22,7 +22,7 @@ public class UserDao extends BaseJpaDao {
     }
 
     public List<User> queryUserByUserName(String userName){
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         if (!StringUtils.isEmpty(userName)) {
             params.put("userName", userName);
@@ -31,21 +31,16 @@ public class UserDao extends BaseJpaDao {
                 "from User " +
                 "where " +
                 "userName = :userName";
-        Function<Object[],User> mapper = new Function<Object[], User>() {
+        Function<Object[],User> mapper = row -> {
 
-            @Override
-            public User apply(Object[] row) {
-
-                User view = new User();
-                view.setUserName((String) row[0]);
-                view.setUserDescription((String) row[1]);
-                view.setLocked(((Boolean) row[2]));
-                view.setPassword((String) row[3]);
-                return view;
-            }
+            User view = new User();
+            view.setUserName((String) row[0]);
+            view.setUserDescription((String) row[1]);
+            view.setLocked(((Boolean) row[2]));
+            view.setPassword((String) row[3]);
+            return view;
         };
-        List<User> result = this.executeDynamicQuery(sql, params, mapper);
-        return result;
+        return this.executeDynamicQuery(sql, params, mapper);
     }
 
 }

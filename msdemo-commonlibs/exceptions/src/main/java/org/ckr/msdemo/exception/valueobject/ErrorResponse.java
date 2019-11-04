@@ -52,7 +52,7 @@ public class ErrorResponse implements Serializable {
      */
     public void addMessage(String msgCode, String msg) {
         if (this.messageList == null) {
-            this.messageList = new ArrayList<ErrorMessage>();
+            this.messageList = new ArrayList<>();
         }
 
         ErrorMessage expMsg = new ErrorMessage(msgCode, msg);

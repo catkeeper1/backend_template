@@ -17,6 +17,32 @@ spring:
         web-allow-others: true
       path: /h2
       enabled: true
+#  data:
+#    mongodb:
+#      authentication-database: admin
+#      database: backend_template
+#      host: 127.0.0.1
+#      port: 27017
+#      username: admin
+#      password: admin
+
+app:
+  session:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  cache:
+    redis:
+      host: 127.0.0.1
+      port: 6380
+  mongodb:
+    database: backend_template
+    address: 127.0.0.1:27017
+    authentication-database: admin
+    username: admin
+    password: admin
+    replicated-set: rs0
+
 
 logging:
   level:
@@ -24,4 +50,9 @@ logging:
       web: DEBUG
       orm: DEBUG
       security: DEBUG
+      data: DEBUG
+    com:
+      mongodb: DEBUG
     org.ckr: DEBUG
+    io:
+      lettuce: DEBUG

@@ -13,6 +13,7 @@
         <module>build-tool</module>
         <module>msdemo-commonlibs</module>
         <module>msdemo-model</module>
+        <module>msdemo-dto</module>
         <module>msdemo-service</module>
     </modules>
 

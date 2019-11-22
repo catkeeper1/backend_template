@@ -1,0 +1,17 @@
+package droolsrules
+dialect "mvel"
+
+import org.ckr.msdemo.adminservice.bmo.CustomerBmo;
+
+
+rule "Hello World"
+    when
+        $customer : CustomerBmo( )
+    then
+        System.out.println( $customer.getName());
+
+
+    modify ( $customer ) { message = "Hello world" };
+end
+
+

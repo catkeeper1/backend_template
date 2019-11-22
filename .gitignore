@@ -1,6 +1,9 @@
 *.
 !.gitignore
 .idea
+**/.project
+**/.classpath
+**/.settings
 
 
 target
@@ -8,3 +11,4 @@ build-tool/target
 
 
 *.iml
+

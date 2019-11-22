@@ -1,7 +1,11 @@
 package org.ckr.msdemo.adminservice.service;
 
+import org.ckr.msdemo.adminservice.bmo.CustomerBmo;
 import org.ckr.msdemo.adminservice.entity.Customer;
 import org.ckr.msdemo.adminservice.repository.CustomerRepository;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,39 @@ public class CustomerService {
 //            throw new RuntimeException("");
 //        }
         return mongoTemplate.findAll(Customer.class);
+
+    }
+
+
+
+    public String helloDrools() {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kContainer = ks.getKieClasspathContainer();
+
+
+        KieSession kSession = null;
+        CustomerBmo bmo  = new CustomerBmo();
+
+
+        try{
+            kSession = kContainer.newKieSession("ksession-rules");
+
+
+            bmo.setName("Jack");
+
+            kSession.insert(bmo);
+            kSession.fireAllRules();
+        } finally {
+            if( kSession != null) {
+                kSession.dispose();
+            }
+        }
+
+
+        return bmo.getMessage();
+
+
+
 
     }
 }

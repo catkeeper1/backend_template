@@ -8,19 +8,29 @@ public class ApplictionExceptionHelper {
 
     private List<ExceptionMessage> exceptionMessages;
 
+    private ApplictionExceptionHelper() {
+        super();
+    }
+
+    public static ApplictionExceptionHelper createExpHelper() {
+        return new ApplictionExceptionHelper();
+    }
+
     /**
      * Add one more user message to this exception.
      * @param msgCode The message code which is used to retrive message from messageSource for i18n. It is also can
      *                be used to indicate the error.
      * @param params  The values for parameters inside the message template.
      */
-    public void addExceptionMessage( String msgCode, Serializable... params){
+    public ApplictionExceptionHelper addExceptionMessage( String msgCode, Serializable... params){
         if(exceptionMessages == null) {
             exceptionMessages = new ArrayList<>();
         }
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         ExceptionMessage expMsg = new ExceptionMessage(msgCode, params,stackTrace);
         exceptionMessages.add(expMsg);
+
+        return this;
     }
 
     /**

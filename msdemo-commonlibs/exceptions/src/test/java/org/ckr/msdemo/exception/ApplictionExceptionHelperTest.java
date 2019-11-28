@@ -12,7 +12,7 @@ public class ApplictionExceptionHelperTest {
 
     @Test
     public void addExceptionTest() {
-        ApplictionExceptionHelper helper = new ApplictionExceptionHelper();
+        ApplictionExceptionHelper helper = ApplictionExceptionHelper.createExpHelper();
 
 
         helper.addExceptionMessage("11", "exception 11==11");

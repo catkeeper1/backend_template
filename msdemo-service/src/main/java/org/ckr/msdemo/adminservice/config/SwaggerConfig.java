@@ -41,8 +41,15 @@ public class SwaggerConfig {
 
         ResponseMessage resMsg = new ResponseMessageBuilder()
                 .code(500)
-                .message("Global exception message")
+                .message("Application exception is thrown. Error messages that should be shown to user are returned")
                 .responseModel(new ModelRef("ErrorResponse"))
+                .build();
+
+        list.add(resMsg);
+
+        resMsg = new ResponseMessageBuilder()
+                .code(401)
+                .message("Authentication is needed.")
                 .build();
 
         list.add(resMsg);

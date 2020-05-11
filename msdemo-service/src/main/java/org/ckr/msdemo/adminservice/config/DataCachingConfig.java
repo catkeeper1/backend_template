@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,7 +32,7 @@ public class DataCachingConfig {
 
     private String host;
     private Integer port;
-
+    private String password;
 
 
     public void setHost(String host) {
@@ -42,10 +43,18 @@ public class DataCachingConfig {
         this.port = port;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Bean
     public LettuceConnectionFactory cacheRedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+
+        if(password != null && password.trim().length() > 0) {
+            config.setPassword(RedisPassword.of(password));
+        }
+
         return new LettuceConnectionFactory(config);
     }
 
